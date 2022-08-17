@@ -88,21 +88,51 @@ const editNoteByIdHandler = (request, h) => {
   const index = notes.findIndex((note) => note.id === id);
   if (index !== -1) {
     // Mengupdate nilai title, tags, dan body pada catatan sesuai index
-    notes[index].title = title;
-    notes[index].tags = tags;
-    notes[index].body = body;
-    notes[index].updatedAt = updatedAt;
-    return {
-      status: 'success',
-      message: 'Note updated successfully',
-      data: {
-        noteId: id,
-      },
+    notes[index] = {
+      ...notes[index],
+      title,
+      tags,
+      body,
+      updatedAt,
     };
+    const response = h.response({
+      status: 'success',
+      message: 'Catatan Berhasil Diperbarui',
+    });
+    response.code(200);
+    return response;
   }
+
   const response = h.response({
     status: 'fail',
-    message: 'Note not found',
+    message: 'Catatan Tidak Ditemukan',
+  });
+  response.code(404);
+  return response;
+};
+
+const deleteNoteByIdHandler = (request, h) => {
+  // Mengambil nilai id dari request.params
+  const { id } = request.params;
+
+  // Mendapatkan index array pada catatan sesuai id
+  const index = notes.findIndex((note) => note.id === id);
+
+  // Cek apakah index array tidak -1
+  if (index !== -1) {
+    // Menghapus array pada catatan sesuai index
+    notes.splice(index, 1);
+    const response = h.response({
+      status: 'success',
+      message: 'Catatan Berhasil Dihapus',
+    });
+    response.code(200);
+    return response;
+  }
+
+  const response = h.response({
+    status: 'fail',
+    message: 'Catatan Tidak Ditemukan',
   });
   response.code(404);
   return response;
@@ -113,4 +143,5 @@ module.exports = {
   getAllNotesHandler,
   getNoteByIdHandler,
   editNoteByIdHandler,
+  deleteNoteByIdHandler,
 };
